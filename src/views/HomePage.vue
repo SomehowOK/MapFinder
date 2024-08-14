@@ -2,6 +2,8 @@
   <div class="spinner-container" v-if="loading">
     <ion-spinner name="crescent"></ion-spinner>
   </div>
+  <ion-alert :is-open="showAlert" onDidDismiss="showAlert = false" header="Error" @ionAlertDidDismiss="showAlert = false"
+             message="Could not find the location. Please try again."></ion-alert>
   <div class="location-button">
     <ion-button @click="moveToCurrentLocation">
       <ion-icon :icon="navigateCircle"></ion-icon>
@@ -17,15 +19,16 @@
         name="OpenStreetMap"
       ></l-tile-layer>
 
-    <l-marker  v-if="currentMarker" :lat-lng="currentMarkerCoordinates"> </l-marker>
-    <l-marker  v-if="searchMarker" :lat-lng="searchMarkerCoordinates"> </l-marker>
+    <l-marker v-if="currentMarker" :lat-lng="currentMarkerCoordinates">
+    </l-marker>
+    <l-marker v-if="searchMarker" :lat-lng="searchMarkerCoordinates"> </l-marker>
     </l-map>
   </div>
 </template>
 
 <script lang="ts">
 import "leaflet/dist/leaflet.css";
-import { IonButton, IonIcon, IonSearchbar, IonSpinner  } from "@ionic/vue";
+import { IonButton, IonIcon, IonSearchbar, IonSpinner, IonAlert  } from "@ionic/vue";
 import {LMap, LTileLayer, LMarker} from "@vue-leaflet/vue-leaflet";
 import { Geolocation } from '@capacitor/geolocation';
 import { Preferences } from '@capacitor/preferences';
@@ -43,6 +46,7 @@ export default defineComponent({
     IonIcon,
     IonSearchbar,
     IonSpinner,
+    IonAlert
   },
   setup() {
 
@@ -58,24 +62,8 @@ export default defineComponent({
     const map = ref(null);
     const renderComponent = ref(true);
     const loading = ref(false);
+    const showAlert = ref(false);
 
-
-    const setupView = async () => {
-      // Retrieve the last center and zoom level from the Preferences storage
-      const savedCenter = await Preferences.get({ key: 'center' });
-      const savedZoom = await Preferences.get({ key: 'zoom' });
-
-      // If the saved values exist, use them to initialize the center and zoom refs
-      if (savedCenter.value) {
-        center.value = JSON.parse(savedCenter.value);
-      }
-      if (savedZoom.value) {
-        zoom.value = JSON.parse(savedZoom.value);
-      }
-    };
-
-    // Call the setupView function when the component is created
-    setupView();
 
     // SetupView Funktioniert noch nicht
     // Marker in anderer Farbe und Größe
@@ -111,27 +99,60 @@ export default defineComponent({
     const moveToLocation = async (adressString: string) => {
       // Move the map to the location specified by the address string
       loading.value = true;
-      const coordinates = await NativeGeocoder.forwardGeocode({
-        addressString: adressString
-      });
-      center.value = [coordinates.addresses[0].latitude, coordinates.addresses[0].longitude];
-      zoom.value = 13; // Adjust zoom level as needed
-      searchMarker.value = true;
-      searchMarkerCoordinates.value = [coordinates.addresses[0].latitude, coordinates.addresses[0].longitude];
+      try {
+        const coordinates = await NativeGeocoder.forwardGeocode({
+          addressString: adressString
+        });
+        center.value = [coordinates.addresses[0].latitude, coordinates.addresses[0].longitude];
+        zoom.value = 13; // Adjust zoom level as needed
+        searchMarker.value = true;
+        searchMarkerCoordinates.value = [coordinates.addresses[0].latitude, coordinates.addresses[0].longitude];
 
-      await Preferences.set({
-        key: 'center',
-        value: JSON.stringify(center.value),
-      });
-      await Preferences.set({
-        key: 'zoom',
-        value: JSON.stringify(zoom.value),
-      });
+        await Preferences.set({
+          key: 'center',
+          value: JSON.stringify(center.value),
+        });
+        await Preferences.set({
+          key: 'zoom',
+          value: JSON.stringify(zoom.value),
+        });
 
-      await forceRender();
-      loading.value = false;
+        await forceRender();
+      } catch (error) {
+        console.error("Error occurred while moving to location: ", error);
+        // You can handle the error here, for example, show a notification to the user
+        showAlert.value = true;
+      } finally {
+        loading.value = false;
+      }
     };
 
+    const setupView = async () => {
+      // Retrieve the last center and zoom level from the Preferences storage
+      const savedCenter = await Preferences.get({ key: 'center' });
+      const savedZoom = await Preferences.get({ key: 'zoom' });
+      console.log(Preferences.get({ key: 'center' }))
+      console.log(Preferences.get({ key: 'zoom' }))
+
+      // If the saved values exist, use them to initialize the center and zoom refs
+      if (savedCenter.value) {
+        center.value = JSON.parse(savedCenter.value);
+        console.log("if savedCenter.value")
+        console.log(JSON.parse(savedCenter.value))
+      }
+      if (savedZoom.value) {
+        zoom.value = JSON.parse(savedZoom.value);
+        console.log("if savedZoom.value")
+        console.log(JSON.parse(savedZoom.value))
+      }
+
+      await forceRender();
+    };
+
+    // Call the setupView function when the component is created
+
+    console.log("setupView")
+    setupView();
 
     return {
       minZoom,
@@ -149,13 +170,15 @@ export default defineComponent({
       searchMarker,
       searchMarkerCoordinates,
       currentMarker,
-      currentMarkerCoordinates
+      currentMarkerCoordinates,
+      showAlert
     };
   },
 });
 </script>
 
 <style scoped>
+
 .location-button {
   position: absolute;
   right: 20px;
