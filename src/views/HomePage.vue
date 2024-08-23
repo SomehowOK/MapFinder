@@ -19,8 +19,11 @@
         name="OpenStreetMap"
       ></l-tile-layer>
 
-    <l-marker v-if="currentMarker" :lat-lng="currentMarkerCoordinates"> </l-marker>
-    <l-marker v-if="searchMarker" :lat-lng="searchMarkerCoordinates"> </l-marker>
+    <l-marker v-if="currentMarker" :lat-lng="currentMarkerCoordinates">
+      <l-icon :icon-url="manIconUrl" :icon-size="[50, 50]" ></l-icon>
+    </l-marker>
+    <l-marker v-if="searchMarker" :lat-lng="searchMarkerCoordinates">
+    </l-marker>
     </l-map>
   </div>
 </template>
@@ -28,16 +31,18 @@
 <script lang="ts">
 import "leaflet/dist/leaflet.css";
 import { IonButton, IonIcon, IonSearchbar, IonSpinner, IonAlert  } from "@ionic/vue";
-import {LMap, LTileLayer, LMarker} from "@vue-leaflet/vue-leaflet";
+import {LMap, LTileLayer, LMarker, LIcon} from "@vue-leaflet/vue-leaflet";
 import { Geolocation } from '@capacitor/geolocation';
 import { Preferences } from '@capacitor/preferences';
 import {defineComponent, ref, nextTick} from "vue";
 import {navigateCircle, search, man} from "ionicons/icons";
 import { NativeGeocoder } from '@capgo/nativegeocoder';
+import manIconUrl from '@/../public/man.png';
 
 
 export default defineComponent({
   components: {
+    LIcon,
     LMap,
     LTileLayer,
     LMarker,
@@ -172,6 +177,7 @@ export default defineComponent({
       currentMarker,
       currentMarkerCoordinates,
       showAlert,
+      manIconUrl
     };
   },
 });
