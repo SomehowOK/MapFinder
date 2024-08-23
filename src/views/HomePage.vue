@@ -19,8 +19,7 @@
         name="OpenStreetMap"
       ></l-tile-layer>
 
-    <l-marker v-if="currentMarker" :lat-lng="currentMarkerCoordinates">
-    </l-marker>
+    <l-marker v-if="currentMarker" :lat-lng="currentMarkerCoordinates"> </l-marker>
     <l-marker v-if="searchMarker" :lat-lng="searchMarkerCoordinates"> </l-marker>
     </l-map>
   </div>
@@ -65,9 +64,10 @@ export default defineComponent({
     const showAlert = ref(false);
 
 
-    // SetupView Funktioniert noch nicht
-    // Marker in anderer Farbe und Größe
+    // Marker in anderer Farbe und Größe !!!
+    // Theoretisch noch Logo und Icon verändern
     // Genz Fragen ob es was schöneres als Force rerender gibt
+
     const forceRender = async () => {
       renderComponent.value = false;
       await nextTick();
@@ -79,7 +79,7 @@ export default defineComponent({
       loading.value = true;
       const currentLocation = await Geolocation.getCurrentPosition();
       center.value = [currentLocation.coords.latitude, currentLocation.coords.longitude];
-      zoom.value = 13; // Adjust zoom level as needed
+      zoom.value = 13;
       currentMarker.value = true;
       currentMarkerCoordinates.value = [currentLocation.coords.latitude, currentLocation.coords.longitude];
 
@@ -171,7 +171,7 @@ export default defineComponent({
       searchMarkerCoordinates,
       currentMarker,
       currentMarkerCoordinates,
-      showAlert
+      showAlert,
     };
   },
 });
