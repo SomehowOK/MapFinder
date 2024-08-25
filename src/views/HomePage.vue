@@ -10,20 +10,24 @@
     </ion-button>
   </div>
   <div class="map-container" v-if="renderComponent">
-  <ion-searchbar class ="searchBarTop" :search-icon="search" placeholder="Location" v-model="searchInput"
-                 @keyup.enter="moveToLocation(searchInput)"></ion-searchbar>
-<l-map ref="map" v-model:zoom="zoom" :center="center" :min-zoom="minZoom" :max-bounds="[[90, -180],[-90, 180]]">
+    <ion-searchbar class ="searchBarTop"
+                   :search-icon="search"
+                   placeholder="Location"
+                   v-model="searchInput"
+                   @keyup.enter="moveToLocation(searchInput)"
+    ></ion-searchbar>
+    <l-map ref="map" v-model:zoom="zoom" :center="center" :min-zoom="minZoom" :max-bounds="[[90, -180],[-90, 180]]">
       <l-tile-layer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        layer-type="base"
-        name="OpenStreetMap"
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          layer-type="base"
+          name="OpenStreetMap"
       ></l-tile-layer>
 
-    <l-marker v-if="currentMarker" :lat-lng="currentMarkerCoordinates">
-      <l-icon :icon-url="manIconUrl" :icon-size="[50, 50]" ></l-icon>
-    </l-marker>
-    <l-marker v-if="searchMarker" :lat-lng="searchMarkerCoordinates">
-    </l-marker>
+      <l-marker v-if="currentMarker" :lat-lng="currentMarkerCoordinates">
+        <l-icon :icon-url="manIconUrl" :icon-size="[50, 50]" ></l-icon>
+      </l-marker>
+      <l-marker v-if="searchMarker" :lat-lng="searchMarkerCoordinates">
+      </l-marker>
     </l-map>
   </div>
 </template>
@@ -111,7 +115,8 @@ export default defineComponent({
         center.value = [coordinates.addresses[0].latitude, coordinates.addresses[0].longitude];
         zoom.value = 13; // Adjust zoom level as needed
         searchMarker.value = true;
-        searchMarkerCoordinates.value = [coordinates.addresses[0].latitude, coordinates.addresses[0].longitude];
+        searchMarkerCoordinates.value = [coordinates.addresses[0].latitude,
+          coordinates.addresses[0].longitude];
 
         await Preferences.set({
           key: 'center',
