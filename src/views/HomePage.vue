@@ -141,19 +141,15 @@ export default defineComponent({
       // Retrieve the last center and zoom level from the Preferences storage
       const savedCenter = await Preferences.get({ key: 'center' });
       const savedZoom = await Preferences.get({ key: 'zoom' });
-      console.log(Preferences.get({ key: 'center' }))
-      console.log(Preferences.get({ key: 'zoom' }))
 
       // If the saved values exist, use them to initialize the center and zoom refs
       if (savedCenter.value) {
         center.value = JSON.parse(savedCenter.value);
-        console.log("if savedCenter.value")
-        console.log(JSON.parse(savedCenter.value))
+
       }
       if (savedZoom.value) {
         zoom.value = JSON.parse(savedZoom.value);
-        console.log("if savedZoom.value")
-        console.log(JSON.parse(savedZoom.value))
+
       }
 
       await forceRender();
@@ -161,7 +157,6 @@ export default defineComponent({
 
     // Call the setupView function when the component is created
 
-    console.log("setupView")
     setupView();
 
     return {
