@@ -16,7 +16,7 @@
                    v-model="searchInput"
                    @keyup.enter="moveToLocation(searchInput)"
     ></ion-searchbar>
-    <l-map ref="map" v-model:zoom="zoom" :center="center" :min-zoom="minZoom" :max-bounds="[[90, -180],[-90, 180]]">
+    <l-map :use-global-leaflet="false" ref="map" v-model:zoom="zoom" :center="center" :min-zoom="minZoom" :max-bounds="[[90, -180],[-90, 180]]">
       <l-tile-layer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           layer-type="base"
